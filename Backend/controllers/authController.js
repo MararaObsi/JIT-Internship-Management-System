@@ -1,36 +1,86 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
 
-export const register = async (req, res) => {
-  const { name, email, password, role } = req.body;
+/* ---------------- REGISTER ---------------- */
+export const registerUser = async (req, res) => {
+  try {
+    const { fullName, email, password } = req.body;
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+    const exists = await User.findOne({ email });
+    if (exists) return res.status(400).json({ message: "Email already exists" });
 
-  const user = await User.create({
-    name,
-    email,
-    password: hashedPassword,
-    role
-  });
+    // Generate username
+    const username = fullName
+      .toLowerCase()
+      .replace(/\s+/g, ".")
+      .replace(/[^a-z.]/g, "");
 
-  res.status(201).json({ message: "User registered successfully" });
+    // Generate system password
+    const systemPassword =
+      fullName.split(" ")[0].substring(0, 2).toUpperCase() +
+      Math.floor(1000 + Math.random() * 9000);
+
+    const hashedPassword = await bcrypt.hash(systemPassword, 10);
+
+    const user = await User.create({
+      fullName,
+      email,
+      username,
+      password: hashedPassword,
+    });
+
+    // Email credentials
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    await transporter.sendMail({
+      from: `"JIT Internship System" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "Your JIT Internship System Login Credentials",
+      html: `
+        <h2>Welcome to JIT Internship Management System</h2>
+        <p><strong>Username:</strong> ${username}</p>
+        <p><strong>Password:</strong> ${systemPassword}</p>
+        <p>Please login and change your password.</p>
+      `,
+    });
+
+    res.status(201).json({ message: "Registration successful. Check your email." });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
-export const login = async (req, res) => {
-  const { email, password } = req.body;
+/* ---------------- LOGIN ---------------- */
+export const loginUser = async (req, res) => {
+  try {
+    const { username, password } = req.body;
 
-  const user = await User.findOne({ email });
-  if (!user) return res.status(404).json({ message: "User not found" });
+    const user = await User.findOne({ username });
+    if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) return res.status(400).json({ message: "Invalid credentials" });
 
-  const token = jwt.sign(
-    { id: user._id, role: user.role },
-    process.env.JWT_SECRET,
-    { expiresIn: "1d" }
-  );
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET || "jit_secret",
+      { expiresIn: "1d" }
+    );
 
-  res.json({ token, role: user.role });
+    res.json({
+      token,
+      role: user.role,
+      username: user.username,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
