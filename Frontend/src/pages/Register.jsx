@@ -11,6 +11,9 @@ const Register = () => {
     fullName: "",
     email: "",
     password: "",
+    department: "",
+    phone: "",
+    profileImage: null,
   });
 
   const [errors, setErrors] = useState({});
@@ -24,43 +27,48 @@ const Register = () => {
     const newErrors = {};
     if (!formData.fullName.trim()) newErrors.fullName = "Full Name is required";
     if (!formData.email.trim()) newErrors.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(formData.email))
-      newErrors.email = "Email is invalid";
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email is invalid";
     if (!formData.password) newErrors.password = "Password is required";
-    else if (formData.password.length < 6)
-      newErrors.password = "Password must be at least 6 characters";
+    else if (formData.password.length < 6) newErrors.password = "Password must be at least 6 characters";
+    if (!formData.department.trim()) newErrors.department = "Department is required";
+    if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
     return newErrors;
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const validationErrors = validate();
-  if (Object.keys(validationErrors).length > 0) {
-    setErrors(validationErrors);
-    return;
-  }
-
-  try {
-    const res = await fetch("http://localhost:5000/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.message || "Registration failed");
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
     }
 
-    alert("Registration successful. Check your email for login credentials.");
-    navigate("/login");
-  } catch (error) {
-    alert(error.message);
-  }
-};
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("fullName", formData.fullName);
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("password", formData.password);
+      formDataToSend.append("department", formData.department);
+      formDataToSend.append("phone", formData.phone);
+      if (formData.profileImage) {
+        formDataToSend.append("profileImage", formData.profileImage);
+      }
 
+      const res = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        body: formDataToSend,
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Registration failed");
+
+      alert("Registration successful. Check your email for login credentials.");
+      navigate("/login");
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-800 via-blue-900 to-blue-700">
@@ -86,6 +94,7 @@ const Register = () => {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Full Name */}
             <div>
               <label className="block text-gray-700 font-medium mb-1">Full Name</label>
               <input
@@ -98,11 +107,10 @@ const Register = () => {
                   errors.fullName ? "border-red-500" : "border-gray-300"
                 }`}
               />
-              {errors.fullName && (
-                <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>
-              )}
+              {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
             </div>
 
+            {/* Email */}
             <div>
               <label className="block text-gray-700 font-medium mb-1">Email</label>
               <input
@@ -115,11 +123,10 @@ const Register = () => {
                   errors.email ? "border-red-500" : "border-gray-300"
                 }`}
               />
-              {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-              )}
+              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
             </div>
 
+            {/* Password */}
             <div>
               <label className="block text-gray-700 font-medium mb-1">Password</label>
               <input
@@ -132,11 +139,54 @@ const Register = () => {
                   errors.password ? "border-red-500" : "border-gray-300"
                 }`}
               />
-              {errors.password && (
-                <p className="text-red-500 text-sm mt-1">{errors.password}</p>
-              )}
+              {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
             </div>
 
+            {/* Department */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">Department</label>
+              <input
+                type="text"
+                name="department"
+                placeholder="Enter your department"
+                value={formData.department}
+                onChange={handleChange}
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-yellow-400 focus:outline-none transition ${
+                  errors.department ? "border-red-500" : "border-gray-300"
+                }`}
+              />
+              {errors.department && <p className="text-red-500 text-sm mt-1">{errors.department}</p>}
+            </div>
+
+            {/* Phone Number */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">Phone Number</label>
+              <input
+                type="text"
+                name="phone"
+                placeholder="Enter your phone number"
+                value={formData.phone}
+                onChange={handleChange}
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-yellow-400 focus:outline-none transition ${
+                  errors.phone ? "border-red-500" : "border-gray-300"
+                }`}
+              />
+              {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+            </div>
+
+            {/* Profile Image */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">Profile Image</label>
+              <input
+                type="file"
+                name="profileImage"
+                accept="image/*"
+                onChange={(e) => setFormData({ ...formData, profileImage: e.target.files[0] })}
+                className="w-full"
+              />
+            </div>
+
+            {/* Submit Button */}
             <button
               type="submit"
               className="w-full bg-yellow-400 text-blue-900 font-bold py-3 rounded-lg shadow-lg hover:bg-yellow-300 transition transform hover:scale-105"
@@ -145,6 +195,7 @@ const Register = () => {
             </button>
           </form>
 
+          {/* Login Link */}
           <p className="text-center text-gray-600 mt-6">
             Already have an account?{" "}
             <Link to="/login" className="text-blue-900 font-semibold hover:underline">

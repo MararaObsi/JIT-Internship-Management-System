@@ -34,7 +34,25 @@ const Login = () => {
       localStorage.setItem("username", data.username);
 
       // Redirect to dashboard
-      navigate("/dashboard");
+       switch (data.role) {
+        case "student":
+          navigate("/student/dashboard");
+          break;
+        case "coordinator":
+          navigate("/coordinator/dashboard");
+          break;
+        case "advisor":
+          navigate("/advisor/dashboard");
+          break;
+        case "supervisor":
+          navigate("/supervisor/dashboard");
+          break;
+        case "uil":
+          navigate("/uil/dashboard");
+          break;
+        default:
+          navigate("/login");
+      }
     } catch (error) {
       alert(error.message);
     }

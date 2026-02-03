@@ -7,6 +7,12 @@ import StudentDashboard from "./pages/dashboards/StudentDashboard";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Privacy from "./pages/Privacy";
+import CoordinatorDashboard from "./pages/dashboards/CoordinatorDashboard";
+import AdvisorDashboard from "./pages/dashboards/AdvisorDashboard";
+import SupervisorDashboard from "./pages/dashboards/SupervisorDashboard";
+import UILDashboard from "./pages/dashboards/UILDashboard";
+import StudentProfile from "./pages/student/studentProfile";
+
 
 function App() {
   return (
@@ -18,6 +24,11 @@ function App() {
       <Route path="/contact" element={<Contact />} />
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/student/dashboard" element={<StudentDashboard />} />
+      <Route path="/coordinator/dashboard" element={<CoordinatorDashboard />} />
+      <Route path="/advisor/dashboard" element={<AdvisorDashboard />} />
+      <Route path="/supervisor/dashboard" element={<SupervisorDashboard />} />
+      <Route path="/uil/dashboard" element={<UILDashboard />} />
+      <Route path="/student/profile" element={<StudentProfile />} />
     </Routes>
   );
 }
