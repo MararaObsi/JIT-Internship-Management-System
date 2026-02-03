@@ -12,6 +12,8 @@ import AdvisorDashboard from "./pages/dashboards/AdvisorDashboard";
 import SupervisorDashboard from "./pages/dashboards/SupervisorDashboard";
 import UILDashboard from "./pages/dashboards/UILDashboard";
 import StudentProfile from "./pages/student/studentProfile";
+import ApplyInternship from "./pages/student/ApplyInternship";
+import InternshipApplyForm from "./pages/student/InternshipApplyForm";
 
 
 function App() {
@@ -29,6 +31,8 @@ function App() {
       <Route path="/supervisor/dashboard" element={<SupervisorDashboard />} />
       <Route path="/uil/dashboard" element={<UILDashboard />} />
       <Route path="/student/profile" element={<StudentProfile />} />
+      <Route path="/student/internship" element={<ApplyInternship />} />
+      <Route path="/student/apply-internship" element={<InternshipApplyForm />} />
     </Routes>
   );
 }
