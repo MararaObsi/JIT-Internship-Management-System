@@ -1,22 +1,26 @@
 import express from "express";
-import { protect } from "../middleware/authMiddleware.js";
-import { applyForInternship } from "../controllers/internshipController.js";
 import multer from "multer";
+import { protect } from "../middleware/authMiddleware.js";
+import {
+  applyForInternship,
+  getMyInternshipStatus,
+  getMyInternshipStatuses,
+  getAllInternships,
+} from "../controllers/internshipController.js";
 
 const router = express.Router();
 
-// Configure multer for file uploads
+// Multer config for file uploads
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/"); // make sure /uploads exists
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + "-" + file.originalname);
-  },
+  destination: (req, file, cb) => cb(null, "uploads/"),
+  filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
 });
 const upload = multer({ storage });
 
+// Routes
+router.get("/", protect, getAllInternships); // fetch all internships
 router.post("/apply", protect, upload.single("report"), applyForInternship);
+router.get("/my-status", protect, getMyInternshipStatus);
+router.get("/my-statuses", protect, getMyInternshipStatuses); // multiple applications
 
 export default router;

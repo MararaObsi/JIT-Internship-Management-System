@@ -12,9 +12,16 @@ const internshipApplicationSchema = new mongoose.Schema(
       ref: "Internship",
       required: true,
     },
-    motivation: { type: String }, 
-    skills: { type: String }, 
-    report: { type: String }, 
+    companyName: {
+      type: String,
+      required: true, // snapshot
+    },
+    location: {
+      type: String,
+    },
+    motivation: String,
+    skills: String,
+    report: String,
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],

@@ -61,11 +61,18 @@ const StudentDashboard = () => {
             <p className="text-gray-600 text-sm mt-1">Submit internship application and track approval</p>
           </Link>
 
-          <Link to="/student/report" className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
-            <FileText className="text-blue-800 mb-4" />
-            <h3 className="text-lg font-semibold text-blue-900">Upload Report</h3>
-            <p className="text-gray-600 text-sm mt-1">Upload and manage internship reports</p>
-          </Link>
+          <Link
+  to="/student/internship-status"
+  className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition"
+>
+  <ClipboardCheck className="text-blue-800 mb-4" />
+  <h3 className="text-lg font-semibold text-blue-900">
+    Internship Status
+  </h3>
+  <p className="text-gray-600 text-sm mt-1">
+    View supervisor decision
+  </p>
+</Link>
 
           <Link to="/student/attendance" className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
             <ClipboardCheck className="text-blue-800 mb-4" />
