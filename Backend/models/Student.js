@@ -11,7 +11,7 @@ const studentSchema = new mongoose.Schema(
     department: { type: String },
     studentId: { type: String },
     phone: { type: String },
-    profileImage: { type: String }, // image URL
+    profileImage: { type: String }, 
     eligibilityStatus: { type: Boolean, default: false },
   },
   { timestamps: true }

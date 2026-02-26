@@ -6,6 +6,11 @@ const internshipSchema = new mongoose.Schema(
     description: { type: String },
     location: { type: String },
     duration: { type: String },
+    supervisorId: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "User",
+  required: true,
+},
   },
   { timestamps: true }
 );
